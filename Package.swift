@@ -369,7 +369,9 @@ let targets: [CustomTarget] = [
 
 let _products: [Product] = targets.compactMap { t in
   guard t.kind == .exported else { return nil }
-  return .library(name: t.name, targets: [t.name])
+  // One process-wide owner for the collection modules used by AI and native consumers.
+  // Consumers of OrderedCollections/DequeModule depend on this aggregate product.
+  return .library(name: t.name, type: t.name == "Collections" ? .dynamic : nil, targets: [t.name])
 }
 let _targets: [Target] = targets.map { $0.toTarget() }
 
